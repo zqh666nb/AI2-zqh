@@ -1,0 +1,11 @@
+SCENE = "FloorPlan1"
+
+TARGET_OBJECT = "Mug"
+
+CABINET_TYPE = "Cabinet"
+
+GOAL_RECEPTACLE = "Table"
+
+GRID_SIZE = 0.25
+
+MAX_STEPS = 200
