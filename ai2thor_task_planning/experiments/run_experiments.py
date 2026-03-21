@@ -2,7 +2,7 @@ from env.controller import ThorController
 from perception.object_detector import ObjectDetector
 from planning.task_planner import TaskPlanner
 from execution.action_executor import ActionExecutor
-from tasks.kitchen_tasks import KitchenTasks
+from config import MAX_STEPS
 
 from experiments.metrics import Metrics
 from utils.visualization import plot_success_rate, plot_steps
@@ -24,20 +24,35 @@ def run_experiment(num_runs=10):
 
         executor = ActionExecutor(env)
 
-        tasks = KitchenTasks(planner)
-
-        plan = tasks.task_get_object()
-
-        step_count = len(plan)
-
+        step_count = 0
         success = True
 
         try:
+            # 1) 先开一下可打开的柜门/冰箱（减少找物体的失败）
+            plan = planner.plan_open_cabinet()
+            step_count += len(plan)
+            executor.execute(plan, stop_on_failure=False)
 
-            executor.execute(plan)
+            # 2) 找到目标物体并拿在手里（循环重规划直到 held）
+            for _ in range(MAX_STEPS):
+                if detector.get_held_object():
+                    break
+                plan = planner.plan_find_object()
+                step_count += len(plan)
+                executor.execute(plan, stop_on_failure=False)
 
-        except:
+            # 3) 把物体放到目标容器里（循环重规划直到手里空）
+            for _ in range(MAX_STEPS):
+                if not detector.get_held_object():
+                    break
+                plan = planner.plan_place()
+                step_count += len(plan)
+                executor.execute(plan, stop_on_failure=False)
 
+            # 最终成功判定：手里是否仍有物体
+            success = detector.get_held_object() is None
+
+        except Exception:
             success = False
 
         metrics.record(success, step_count)

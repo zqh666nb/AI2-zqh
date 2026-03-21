@@ -1,5 +1,5 @@
 from ai2thor.controller import Controller
-from config import SCENE, GRID_SIZE
+from config import SCENE, GRID_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT
 
 
 class SceneManager:
@@ -11,7 +11,9 @@ class SceneManager:
             gridSize=GRID_SIZE,
             snapToGrid=True,
             rotateStepDegrees=90,
-            visibilityDistance=1.5
+            visibilityDistance=1.5,
+            width=WINDOW_WIDTH,
+            height=WINDOW_HEIGHT,
         )
 
     def reset_scene(self):
@@ -36,3 +38,4 @@ class SceneManager:
     def get_controller(self):
 
         return self.controller
+

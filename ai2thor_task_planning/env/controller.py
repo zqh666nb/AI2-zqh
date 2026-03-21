@@ -1,5 +1,5 @@
 from ai2thor.controller import Controller
-from config import SCENE, GRID_SIZE
+from config import SCENE, GRID_SIZE, WINDOW_WIDTH, WINDOW_HEIGHT
 
 class ThorController:
 
@@ -11,7 +11,9 @@ class ThorController:
             visibilityDistance=1.5,
             gridSize=GRID_SIZE,
             snapToGrid=True,
-            rotateStepDegrees=90
+            rotateStepDegrees=90,
+            width=WINDOW_WIDTH,
+            height=WINDOW_HEIGHT,
         )
 
     def step(self, action, **kwargs):
@@ -25,3 +27,4 @@ class ThorController:
 
     def get_event(self):
         return self.controller.last_event
+
