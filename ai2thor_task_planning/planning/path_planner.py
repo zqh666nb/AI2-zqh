@@ -1,4 +1,5 @@
 import heapq
+import random
 from config import GRID_SIZE
 
 # direction vector -> rotation (degrees)
@@ -16,30 +17,15 @@ class AStarPlanner:
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
     def world_to_grid(self, x, z):
-        """将 AI2-THOR 世界坐标转换为网格坐标"""
+
         return (round(x / GRID_SIZE), round(z / GRID_SIZE))
 
     def build_reachable_set(self, reachable_positions):
-        """
-        将 AI2-THOR GetReachablePositions 返回的位置列表
-        转换为可达网格坐标集合 set{(gx, gz)}
-        """
+
         return {self.world_to_grid(p["x"], p["z"]) for p in reachable_positions}
 
     def search(self, start, goal, reachable_set):
-        """
-        在网格上执行 A* 搜索。
-
-        Parameters
-        ----------
-        start         : (gx, gz) 起点网格坐标
-        goal          : (gx, gz) 终点网格坐标
-        reachable_set : set of (gx, gz)，可行走的格子集合
-
-        Returns
-        -------
-        came_from : dict，用于重建路径；若无路径则为空 dict
-        """
+ 
         open_list = []
         heapq.heappush(open_list, (0, start))
 
@@ -68,11 +54,12 @@ class AStarPlanner:
                 new_cost = cost[current] + 1
 
                 if next_pos not in cost or new_cost < cost[next_pos]:
-
                     cost[next_pos] = new_cost
                     priority = new_cost + self.heuristic(goal, next_pos)
                     heapq.heappush(open_list, (priority, next_pos))
-                    came_from[next_pos] = current
+                    came_from[next_pos] = [current]
+                elif new_cost == cost[next_pos]:
+                    came_from[next_pos].append(current)
 
         return came_from
 
@@ -89,7 +76,7 @@ class AStarPlanner:
 
         while current != start:
             path.append(current)
-            current = came_from[current]
+            current = random.choice(came_from[current])
 
         path.append(start)
         path.reverse()

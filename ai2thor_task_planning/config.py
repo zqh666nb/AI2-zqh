@@ -1,4 +1,4 @@
-SCENE = "FloorPlan1"
+SCENE = "FloorPlan2"
 
 TARGET_OBJECT = "Apple"
 

@@ -27,4 +27,3 @@ class ThorController:
 
     def get_event(self):
         return self.controller.last_event
-
